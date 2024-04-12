@@ -12,7 +12,6 @@ namespace SnakeGame
         {
             // Initialize a new game instance with the current console window dimensions.
             var game = new SnakeGame(Console.WindowWidth, Console.WindowHeight);
-            // Start the game loop.
             game.Start();
         }
     }
@@ -25,20 +24,17 @@ namespace SnakeGame
         private const string Up = "UP";
         private const string Down = "DOWN";
 
-        // Screen dimensions are set based on the console window size.
         private readonly int _screenWidth;
         private readonly int _screenHeight;
-        // Random number generator for placing the _berry randomly.
+        // Random number generator for placing the berryPosition randomly.
         private readonly Random _random = new Random();
-        // Initial _score and game state flags.
+        // Initial score and game state flags.
         private int _score = 5;
         private bool _isGameOver;
         private Point _snakeHead;
         // Snake head and body management.
-        private List<Point> _snakeBody = new List<Point>();
-        // Berry's position.
-        private Point _berry;
-        // Current movement direction of the snake.
+        private readonly List<Point> _snakeBody = new();
+        private Point _berryPosition;
         private string _currentDirection = Right;
 
         public SnakeGame(int width, int height)
@@ -65,7 +61,6 @@ namespace SnakeGame
 
         private void ResetGame()
         {
-            // Reset game state for a new game.
             _isGameOver = false;
             _snakeHead = new Point(_screenWidth / 2, _screenHeight / 2, ConsoleColor.Red);
             _snakeBody.Clear();
@@ -74,7 +69,7 @@ namespace SnakeGame
             {
                 _snakeBody.Add(new Point(_snakeHead.X - i, _snakeHead.Y, ConsoleColor.Green));
             }
-            _berry = CreateBerry();
+            _berryPosition = CreateBerry();
         }
 
         private Point CreateBerry()
@@ -85,13 +80,11 @@ namespace SnakeGame
 
         private void ClearScreen()
         {
-            // Clear the console screen to prepare for the next game frame.
             Console.Clear();
         }
 
         private void DrawBorders()
         {
-            // Set the border color and draw borders along the screen edges.
             Console.ForegroundColor = ConsoleColor.White;
             for (int x = 0; x < _screenWidth; x++)
             {
@@ -135,7 +128,6 @@ namespace SnakeGame
 
         private void UpdateGame()
         {
-            // Update snake position and check for collisions.
             MoveSnake();
             CheckCollision();
         }
@@ -157,21 +149,20 @@ namespace SnakeGame
             _snakeHead = newHead;
 
             // If the new head position is on the berry, eat the berry and grow.
-            if (_snakeHead.Equals(_berry))
+            if (_snakeHead.Equals(_berryPosition))
             {
                 _score++;
-                _berry = CreateBerry();
+                _berryPosition = CreateBerry();
             }
             else
             {
                 // Remove the tail segment if no berry was eaten
-                _snakeBody.RemoveAt(_snakeBody.Count - 1); // Remove the tail segment if no _berry was eaten
+                _snakeBody.RemoveAt(_snakeBody.Count - 1);
             }
         }
 
         private void CheckCollision()
         {
-            // Check if the snake has collided with the wall or itself.
             if (_snakeHead.X == 0 || _snakeHead.X == _screenWidth - 1 || _snakeHead.Y == 0 || _snakeHead.Y == _screenHeight - 1)
             {
                 _isGameOver = true;
@@ -195,32 +186,24 @@ namespace SnakeGame
             Console.SetCursorPosition(_snakeHead.X, _snakeHead.Y);
             Console.Write("■");
             // Draw the berry.
-            Console.SetCursorPosition(_berry.X, _berry.Y);
-            Console.ForegroundColor = _berry.Color;
+            Console.SetCursorPosition(_berryPosition.X, _berryPosition.Y);
+            Console.ForegroundColor = _berryPosition.Color;
             Console.Write("ó");
         }
 
         private void DisplayGameOver()
         {
-            // Clear the screen and display the game over message.
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine($"Game over, Score: {_score}");
         }
     }
 
-    public class Point
+    public class Point(int x, int y, ConsoleColor color)
     {
-        public int X { get; set; }
-        public int Y { get; set; }
-        public ConsoleColor Color { get; }
-
-        public Point(int x, int y, ConsoleColor color)
-        {
-            X = x;
-            Y = y;
-            Color = color;
-        }
+        public int X { get; set; } = x;
+        public int Y { get; set; } = y;
+        public ConsoleColor Color { get; } = color;
 
         public bool Equals(Point other)
         {
