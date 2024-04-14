@@ -1,4 +1,7 @@
-﻿using SnakeGame.Model;
+﻿//This project is done by Roman Marecek for Tomas Bata University in Zlin, Czech Republic
+//This code is refactored and modified fom the original code from https://codereview.stackexchange.com/questions/127515/first-c-program-snake-game
+
+using SnakeGame.Model;
 using SnakeGame.View;
 using SnakeGame.Controller;
 
